@@ -7,20 +7,11 @@ import jakarta.ws.rs.core.Response;
 import org.example.config.model.Client;
 import org.example.config.service.ClientService;
 
-import java.util.List;
-
 @Path("/clients")
 public class Controller {
 
     @Inject
     private ClientService service;
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getClients(){
-        List<Client> clientList = service.getClients();
-        return Response.ok().status(Response.Status.OK).entity(clientList).build();
-    }
 
     @POST
     @Path("/insert")
@@ -34,11 +25,10 @@ public class Controller {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getClientById(@PathParam("id") Long id){
-        if (service.getClientById(id).getId() != null) {
+        if (service.getClientById(id).getFirstname() != null && service.isActive(id)) {
             return Response.ok().status(Response.Status.OK).entity(service.getClientById(id)).build();
         }else
-            return Response.ok().status(400).entity("Client with id: " + id + "not found").build();
-
+            return Response.ok().status(400).entity("Client with id: " + id + " not found or deactivated").build();
     }
 
     @POST
@@ -53,11 +43,10 @@ public class Controller {
     @Path("/delete/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void deleteClient(@PathParam("id") Long id){
-        if (service.getClientById(id).getId() != null) {
+    public Response deleteClient(@PathParam("id") Long id){
+        if (service.getClientById(id).getFirstname() != null && service.isActive(id)) {
             service.delete(id);
-            Response.ok().status(Response.Status.OK).build();
-        }else Response.ok().status(400).entity("Client with id: " + id + "not found").build();
-
+            return Response.ok().status(Response.Status.OK).entity("Client with id: " + id + " was deactivated").build();
+        }else return Response.ok().status(400).entity("Client with id: " + id + " not found or deactivated").build();
     }
 }

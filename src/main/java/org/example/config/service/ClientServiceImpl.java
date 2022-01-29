@@ -5,10 +5,6 @@ import jakarta.inject.Named;
 import org.example.config.dao.DbRepository;
 import org.example.config.model.Client;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 @Named
 public class ClientServiceImpl implements ClientService{
     @Inject
@@ -26,11 +22,6 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public List<Client> getClients() {
-        return repository.getClients();
-    }
-
-    @Override
     public Client getClientById(Long id){
         return repository.getClientById(id);
     }
@@ -38,5 +29,10 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public void delete(Long id) {
         repository.deleteClient(id);
+    }
+
+    @Override
+    public boolean isActive(Long id){
+        return repository.isActive(id);
     }
 }
